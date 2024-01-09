@@ -102,6 +102,7 @@ int main(void)
   LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_3);
   LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_8);
   LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_9);
+  LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_11);
   LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_5);
   // __HAL_TIM_SetCompare(&htim14, TIM_CHANNEL_1, 50); // TIM1_CH3N  0~100
   

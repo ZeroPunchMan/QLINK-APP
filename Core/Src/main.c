@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
+#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -88,11 +90,13 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_TIM14_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_TIM16_Init();
   MX_TIM17_Init();
+  MX_ADC_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
@@ -116,6 +120,7 @@ int main(void)
   // __HAL_TIM_SetCompare(&htim16, TIM_CHANNEL_1, 0);
   // __HAL_TIM_SetCompare(&htim17, TIM_CHANNEL_1, 20);
 
+  StartAdc();
   while (1)
   {
     /* USER CODE END WHILE */
@@ -154,6 +159,14 @@ void SystemClock_Config(void)
 
   }
   LL_RCC_HSI_SetCalibTrimming(16);
+  LL_RCC_HSI14_Enable();
+
+   /* Wait till HSI14 is ready */
+  while(LL_RCC_HSI14_IsReady() != 1)
+  {
+
+  }
+  LL_RCC_HSI14_SetCalibTrimming(16);
   LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI_DIV_2, LL_RCC_PLL_MUL_12);
   LL_RCC_PLL_Enable();
 
@@ -178,6 +191,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  LL_RCC_HSI14_EnableADCControl();
   LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_PCLK1);
 }
 

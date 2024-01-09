@@ -91,8 +91,12 @@ int main(void)
   MX_TIM14_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_TIM16_Init();
+  MX_TIM17_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim17, TIM_CHANNEL_1);
 
   /* USER CODE END 2 */
 
@@ -104,8 +108,14 @@ int main(void)
   LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_9);
   LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_11);
   LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_5);
-  // __HAL_TIM_SetCompare(&htim14, TIM_CHANNEL_1, 50); // TIM1_CH3N  0~100
+  // __HAL_TIM_SetCompare(&htim14, TIM_CHANNEL_1, 50); 
+
+  __HAL_TIM_SetCompare(&htim16, TIM_CHANNEL_1, 20);
+  __HAL_TIM_SetCompare(&htim17, TIM_CHANNEL_1, 0);
   
+  // __HAL_TIM_SetCompare(&htim16, TIM_CHANNEL_1, 0);
+  // __HAL_TIM_SetCompare(&htim17, TIM_CHANNEL_1, 20);
+
   while (1)
   {
     /* USER CODE END WHILE */

@@ -24,7 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "systime.h"
+#include "cl_log.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,6 +103,17 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    static uint32_t lastTime = 0;
+    if(SysTimeSpan(lastTime) >= 1000)
+    {
+      lastTime = GetSysTime();
+      // PrintNvicIrq();
+
+      CL_LOG_LINE("app %ds",  
+        GetSysTime() / 1000);
+      uint8_t testData[5] = {1,2,3,4,5};
+      Usartx_Send(USART2, testData, 0, CL_ARRAY_LENGTH(testData));
+    }
   }
   /* USER CODE END 3 */
 }

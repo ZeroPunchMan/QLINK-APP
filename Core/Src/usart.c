@@ -162,7 +162,7 @@ CL_Result_t Usartx_Send(USART_TypeDef *Usartx, const uint8_t *data, uint16_t off
     CL_Queue_t *queue;
     if (Usartx == USART2)
         queue = &usart2SendQueue;
-    if (Usartx == USART1)
+    else if (Usartx == USART1)
         queue = &usart1SendQueue;
     else
         return CL_ResInvalidParam;
@@ -176,5 +176,30 @@ CL_Result_t Usartx_Send(USART_TypeDef *Usartx, const uint8_t *data, uint16_t off
     EnableTxe(Usartx);
 
     return CL_ResSuccess;
+}
+
+
+
+#include "stdio.h"
+#pragma import(__use_no_semihosting)
+
+struct __FILE
+{
+    int handle;
+};
+
+FILE __stdout;
+
+void _sys_exit(int x)
+{
+    x = x;
+}
+
+int fputc(int ch, FILE *f)
+{
+    uint8_t data = ch;
+    CL_QueueAdd(&usart1SendQueue, &data);
+    EnableTxe(USART1);
+    return ch;
 }
 /* USER CODE END 1 */

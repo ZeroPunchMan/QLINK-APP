@@ -22,6 +22,8 @@
 #include "stm32f0xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "usart.h"
+#include "systime.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -129,6 +131,7 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
+  SysTimeInc(1);
 
   /* USER CODE END SysTick_IRQn 1 */
 }
@@ -149,7 +152,26 @@ void USART1_IRQHandler(void)
 
   /* USER CODE END USART1_IRQn 0 */
   /* USER CODE BEGIN USART1_IRQn 1 */
+  volatile uint8_t data;
+  /* Check RXNE flag value in SR register */
+  if (LL_USART_IsActiveFlag_RXNE(USART1))
+  {
+    data = LL_USART_ReceiveData8(USART1);
+    Usart1_AddRecvByte(data);
+  }
+  else if (LL_USART_IsActiveFlag_ORE(USART1))
+  {
+    LL_USART_ClearFlag_ORE(USART1);
+    // data = LL_USART_ReceiveData8(USART1);
+  }
 
+  if (LL_USART_IsActiveFlag_TXE(USART1))
+  {
+    if(Usart1_PollSendByte(&data) == CL_ResSuccess)
+      LL_USART_TransmitData8(USART1, data);
+    else
+      LL_USART_DisableIT_TXE(USART1);
+  }
   /* USER CODE END USART1_IRQn 1 */
 }
 
@@ -162,7 +184,25 @@ void USART2_IRQHandler(void)
 
   /* USER CODE END USART2_IRQn 0 */
   /* USER CODE BEGIN USART2_IRQn 1 */
+  volatile uint8_t data;
+  /* Check RXNE flag value in SR register */
+  if (LL_USART_IsActiveFlag_RXNE(USART2))
+  {
+    data = LL_USART_ReceiveData8(USART2);
+    Usart2_AddRecvByte(data);
+  }
+  else if (LL_USART_IsActiveFlag_ORE(USART2))
+  {
+    LL_USART_ClearFlag_ORE(USART2);
+  }
 
+  if (LL_USART_IsActiveFlag_TXE(USART2))
+  {
+    if(Usart2_PollSendByte(&data) == CL_ResSuccess)
+      LL_USART_TransmitData8(USART2, data);
+    else
+      LL_USART_DisableIT_TXE(USART2);
+  }
   /* USER CODE END USART2_IRQn 1 */
 }
 

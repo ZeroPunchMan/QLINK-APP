@@ -10,6 +10,7 @@
       <TargetName>app</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>6160000::V6.16::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -338,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_FULL_LL_DRIVER,USE_HAL_DRIVER,STM32F030x8</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F0xx_HAL_Driver/Inc;../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F0xx/Include;../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F0xx_HAL_Driver/Inc;../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F0xx/Include;../Drivers/CMSIS/Include;..\clib\inc;..\app</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -541,6 +542,51 @@
               <FileName>system_stm32f0xx.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/system_stm32f0xx.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>clib</GroupName>
+          <Files>
+            <File>
+              <FileName>cl_event_system.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\clib\src\cl_event_system.c</FilePath>
+            </File>
+            <File>
+              <FileName>cl_fsm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\clib\src\cl_fsm.c</FilePath>
+            </File>
+            <File>
+              <FileName>cl_list.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\clib\src\cl_list.c</FilePath>
+            </File>
+            <File>
+              <FileName>cl_pool.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\clib\src\cl_pool.c</FilePath>
+            </File>
+            <File>
+              <FileName>cl_queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\clib\src\cl_queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>cl_serialize.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\clib\src\cl_serialize.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>app</GroupName>
+          <Files>
+            <File>
+              <FileName>systime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\app\systime.c</FilePath>
             </File>
           </Files>
         </Group>

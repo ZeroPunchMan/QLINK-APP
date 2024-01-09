@@ -22,6 +22,11 @@
 
 /* USER CODE BEGIN 0 */
 
+CL_QUEUE_DEF_INIT(usart1RecvQueue, 256, uint8_t, );
+CL_QUEUE_DEF_INIT(usart1SendQueue, 256, uint8_t, );
+
+CL_QUEUE_DEF_INIT(usart2RecvQueue, 256, uint8_t, );
+CL_QUEUE_DEF_INIT(usart2SendQueue, 256, uint8_t, );
 /* USER CODE END 0 */
 
 /* USART1 init function */
@@ -147,4 +152,29 @@ void MX_USART2_UART_Init(void)
 
 /* USER CODE BEGIN 1 */
 
+static inline void EnableTxe(USART_TypeDef *Usartx)
+{
+    LL_USART_EnableIT_TXE(Usartx);
+}
+
+CL_Result_t Usartx_Send(USART_TypeDef *Usartx, const uint8_t *data, uint16_t offset, uint16_t len)
+{
+    CL_Queue_t *queue;
+    if (Usartx == USART2)
+        queue = &usart2SendQueue;
+    if (Usartx == USART1)
+        queue = &usart1SendQueue;
+    else
+        return CL_ResInvalidParam;
+
+    if (CL_QueueFreeSpace(queue) < len)
+        return CL_ResFailed;
+
+    for (uint16_t i = 0; i < len; i++)
+        CL_QueueAdd(queue, (void *)&data[i + offset]);
+
+    EnableTxe(Usartx);
+
+    return CL_ResSuccess;
+}
 /* USER CODE END 1 */

@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "cl_log.h": "c"
+        "cl_log.h": "c",
+        "gpio.h": "c"
     }
 }

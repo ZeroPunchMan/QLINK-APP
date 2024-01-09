@@ -98,6 +98,9 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_2);
+  LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_5);
+  
   while (1)
   {
     /* USER CODE END WHILE */

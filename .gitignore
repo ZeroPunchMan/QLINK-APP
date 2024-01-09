@@ -1,0 +1,8 @@
+MDK-ARM/app
+MDK-ARM/DebugConfig
+MDK-ARM/RTE
+MDK-ARM/*.uvguix.*
+*.scvd
+*.lst
+MDK-ARM/JLinkLog.txt
+MDK-ARM/JLinkSettings.ini

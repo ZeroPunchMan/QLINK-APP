@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "cl_log.h": "c",
-        "gpio.h": "c"
+        "gpio.h": "c",
+        "stm32f0xx.h": "c"
     }
 }

@@ -106,20 +106,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_2);
-  LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_3);
-  LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_8);
-  LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_9);
-  LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_11);
-  LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_5);
-  // __HAL_TIM_SetCompare(&htim14, TIM_CHANNEL_1, 50); 
-
-  __HAL_TIM_SetCompare(&htim16, TIM_CHANNEL_1, 20);
-  __HAL_TIM_SetCompare(&htim17, TIM_CHANNEL_1, 0);
-  
-  // __HAL_TIM_SetCompare(&htim16, TIM_CHANNEL_1, 0);
-  // __HAL_TIM_SetCompare(&htim17, TIM_CHANNEL_1, 20);
-
   StartAdc();
   while (1)
   {
@@ -132,8 +118,7 @@ int main(void)
       lastTime = GetSysTime();
       // PrintNvicIrq();
 
-      CL_LOG_LINE("app %ds",  
-        GetSysTime() / 1000);
+      CL_LOG_INFO("app %ds", GetSysTime() / 1000);
       uint8_t testData[5] = {1,2,3,4,5};
       Usartx_Send(USART2, testData, 0, CL_ARRAY_LENGTH(testData));
     }

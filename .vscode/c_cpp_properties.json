@@ -8,8 +8,7 @@
                 "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F0xx/Include",
                 "${workspaceFolder}/app",
                 "${workspaceFolder}/Core/Inc",
-                "${workspaceFolder}/common/clib/inc",
-                "${workspaceFolder}/common"
+                "${workspaceFolder}/Drivers/CMSIS/Include"
             ],
             "defines": [
                 "USE_FULL_LL_DRIVER",
@@ -23,11 +22,7 @@
                 "int8_t=char",
                 "__STATIC_INLINE=static inline",
                 "__attribute__(x)=",
-                "FLASH",
-                "USART1",
-                "USART2",
-                "RCC",
-                "GPIOA"
+                "STM32F030x8"
             ],
             "cStandard": "c99",
             "browse": {

@@ -4,19 +4,35 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/clib/inc",
-                "${workspaceFolder}/app"
+                "${workspaceFolder}/Drivers/STM32F0xx_HAL_Driver/Inc",
+                "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F0xx/Include",
+                "${workspaceFolder}/app",
+                "${workspaceFolder}/Core/Inc",
+                "${workspaceFolder}/common/clib/inc",
+                "${workspaceFolder}/common"
             ],
             "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
+                "USE_FULL_LL_DRIVER",
+                "USE_HAL_DRIVER",
+                "'STM32F030x8",
+                "uint32_t=unsigned int",
+                "int32_t=int",
+                "uint16_t=unsigned short",
+                "int16_t=short",
+                "uint8_t=unsigned char",
+                "int8_t=char",
+                "__STATIC_INLINE=static inline",
+                "__attribute__(x)=",
+                "FLASH",
+                "USART1",
+                "USART2",
+                "RCC",
+                "GPIOA"
             ],
-            "windowsSdkVersion": "10.0.22000.0",
-            "compilerPath": "cl.exe",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "windows-msvc-x64"
+            "cStandard": "c99",
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true
+            }
         }
     ],
     "version": 4

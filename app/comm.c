@@ -64,7 +64,7 @@ static void ParseKeyPack(const uint8_t *pack)
         return;
     }
 
-    static const uint8_t decTable[8] = {6, 9, 16, 25, 36, 49, 64, 9};
+    static const uint8_t decTable[8] = {4, 9, 16, 25, 36, 49, 64, 9};
     context.gotKey = true;
     context.key = 0;
     for (int i = 0; i < 8; i++)

@@ -8,12 +8,13 @@
                 "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F0xx/Include",
                 "${workspaceFolder}/app",
                 "${workspaceFolder}/Core/Inc",
-                "${workspaceFolder}/Drivers/CMSIS/Include"
+                "${workspaceFolder}/Drivers/CMSIS/Include",
+                "${workspaceFolder}/common/clib/inc"
             ],
             "defines": [
                 "USE_FULL_LL_DRIVER",
                 "USE_HAL_DRIVER",
-                "'STM32F030x8",
+                "STM32F030x8",
                 "uint32_t=unsigned int",
                 "int32_t=int",
                 "uint16_t=unsigned short",
@@ -21,8 +22,7 @@
                 "uint8_t=unsigned char",
                 "int8_t=char",
                 "__STATIC_INLINE=static inline",
-                "__attribute__(x)=",
-                "STM32F030x8"
+                "__attribute__(x)="
             ],
             "cStandard": "c99",
             "browse": {

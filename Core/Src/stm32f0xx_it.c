@@ -57,7 +57,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern DMA_HandleTypeDef hdma_adc;
+
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -144,20 +144,6 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles DMA1 channel 1 interrupt.
-  */
-void DMA1_Channel1_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
-
-  /* USER CODE END DMA1_Channel1_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_adc);
-  /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
-
-  /* USER CODE END DMA1_Channel1_IRQn 1 */
-}
-
-/**
   * @brief This function handles USART1 global interrupt.
   */
 void USART1_IRQHandler(void)
@@ -187,37 +173,6 @@ void USART1_IRQHandler(void)
       LL_USART_DisableIT_TXE(USART1);
   }
   /* USER CODE END USART1_IRQn 1 */
-}
-
-/**
-  * @brief This function handles USART2 global interrupt.
-  */
-void USART2_IRQHandler(void)
-{
-  /* USER CODE BEGIN USART2_IRQn 0 */
-
-  /* USER CODE END USART2_IRQn 0 */
-  /* USER CODE BEGIN USART2_IRQn 1 */
-  volatile uint8_t data;
-  /* Check RXNE flag value in SR register */
-  if (LL_USART_IsActiveFlag_RXNE(USART2))
-  {
-    data = LL_USART_ReceiveData8(USART2);
-    Usart2_AddRecvByte(data);
-  }
-  else if (LL_USART_IsActiveFlag_ORE(USART2))
-  {
-    LL_USART_ClearFlag_ORE(USART2);
-  }
-
-  if (LL_USART_IsActiveFlag_TXE(USART2))
-  {
-    if(Usart2_PollSendByte(&data) == CL_ResSuccess)
-      LL_USART_TransmitData8(USART2, data);
-    else
-      LL_USART_DisableIT_TXE(USART2);
-  }
-  /* USER CODE END USART2_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

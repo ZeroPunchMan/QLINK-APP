@@ -1,25 +1,23 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "adc.h"
-#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -28,6 +26,14 @@
 /* USER CODE BEGIN Includes */
 #include "systime.h"
 #include "cl_log.h"
+#include "cl_event_system.h"
+#include "buzzer.h"
+#include "comm.h"
+#include "board.h"
+#include "flash_layout.h"
+#include "led.h"
+#include "heater.h"
+#include "channel.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,6 +66,73 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+CL_Result_t EraseFlash(uint32_t addr, uint32_t pages)
+{
+  FLASH_EraseInitTypeDef EraseInitStruct;
+  EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
+  EraseInitStruct.PageAddress = addr;
+  EraseInitStruct.NbPages = pages;
+
+  uint32_t PAGEError = 0;
+  if (HAL_FLASHEx_Erase(&EraseInitStruct, &PAGEError) != HAL_OK)
+    return CL_ResFailed;
+
+  return CL_ResSuccess;
+}
+
+CL_Result_t WriteFlash(uint32_t addr, const uint8_t *buff, uint32_t length)
+{
+  uint32_t writeAddr, offset;
+  uint32_t data;
+  HAL_StatusTypeDef status;
+
+  /* Clear All pending flags */
+  // __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR | FLASH_FLAG_PROGERR);
+
+  // little endian [0-0][0-1][0-2][0-3][1-0][1-1][1-2][1-3] -> 3210
+  offset = 0;
+  writeAddr = addr;
+  while (offset < length)
+  {
+    data = 0;
+    for (int i = 0; i < 4; i++)
+    {
+      if (offset < length)
+        data |= (uint32_t)buff[offset++] << (i * 8);
+      else
+        break;
+    }
+    status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, writeAddr, data);
+    if (status != HAL_OK)
+      return CL_ResFailed;
+
+    writeAddr += 4;
+  }
+  return CL_ResSuccess;
+}
+
+void MarkNeedDfu(void)
+{
+  HAL_FLASH_Unlock();
+  EraseFlash(DFU_FLAG_ADDR, 1);
+
+  uint32_t mark[2] = {0x12345678, 0x87654321};
+  WriteFlash(DFU_FLAG_ADDR, (const uint8_t *)mark, sizeof(mark));
+  HAL_FLASH_Lock();
+}
+
+typedef void (*pFunction)(void);
+pFunction JumpToAddrFunc;
+void JumpToBootloader(void)
+{
+  uint32_t JumpAddress; // 跳转地址
+
+  JumpAddress = *(volatile uint32_t *)(FLASH_START_ADDR + 4); // 获取复位地址
+  JumpToAddrFunc = (pFunction)JumpAddress;                    // 函数指针指向复位地址
+  __set_MSP(*(volatile uint32_t *)FLASH_START_ADDR);          // 设置主堆栈指针MSP指向升级机制IAP_ADDR
+  JumpToAddrFunc();                                           // 跳转到升级代码处
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -68,8 +141,16 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
 
+  /* USER CODE BEGIN 1 */
+  volatile uint32_t *pVector = (volatile uint32_t *)0x20000000;
+  for (uint32_t i = 0; i < 50; i++)
+  {
+    pVector[i] = ((volatile uint32_t *)APP_START_ADDR)[i];
+  }
+  LL_SYSCFG_SetRemapMemory(LL_SYSCFG_REMAP_SRAM);
+
+  CL_EventSysInit();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -90,38 +171,56 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_TIM14_Init();
   MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
   MX_TIM16_Init();
   MX_TIM17_Init();
-  MX_ADC_Init();
+  MX_TIM1_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+  Pwm_SetCompare(PwmChan_Chan1Amp, 0);
   HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+
+  Pwm_SetCompare(PwmChan_Chan1Freq, 0);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+
+  Pwm_SetCompare(PwmChan_Chan2Amp, 0);
   HAL_TIM_PWM_Start(&htim17, TIM_CHANNEL_1);
+
+  Pwm_SetCompare(PwmChan_Chan2Freq, 0);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+
+  Pwm_SetCompare(PwmChan_Chan3Amp, 0);
+  HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+
+  Pwm_SetCompare(PwmChan_Chan3Freq, 0);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  StartAdc();
+  Buzzer_Init();
+  Comm_Init();
+  Led_Init();
+  Heater_Init();
+  Channel_Init();
   while (1)
   {
+    Buzzer_Process();
+    Comm_Process();
+    Led_Process();
+    Heater_Process();
+    Channel_Process();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
     static uint32_t lastTime = 0;
-    if(SysTimeSpan(lastTime) >= 1000)
+    if (SysTimeSpan(lastTime) >= 1000)
     {
       lastTime = GetSysTime();
-      // PrintNvicIrq();
-
-      CL_LOG_INFO("app %ds", GetSysTime() / 1000);
-      uint8_t testData[5] = {1,2,3,4,5};
-      Usartx_Send(USART2, testData, 0, CL_ARRAY_LENGTH(testData));
     }
+
   }
   /* USER CODE END 3 */
 }

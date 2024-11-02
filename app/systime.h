@@ -2,7 +2,7 @@
 
 #include "cl_common.h"
 
-#define SYSTIME_SECOND(s) (s * 1000UL)
+#define SYSTIME_SECOND(s) ((s) * 1000UL)
 
 extern volatile uint32_t g_sysTime;
 

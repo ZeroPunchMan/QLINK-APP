@@ -78,7 +78,7 @@ void Channel_Init(void)
     for (int i = 0; i < ChanIdx_Max; i++)
         context.energy[i] = 0;
 
-    context.freq = ChanFreq_High;
+    context.freq = ChanFreq_Low;
     context.freqTime = 0;
     context.timPeriod = LOW_FREQ_PERIOD;
     context.targetPeriod = LOW_FREQ_PERIOD;
@@ -92,6 +92,7 @@ void Channel_Process(void)
         { // 蓝牙断开后关闭全部通道
             for (int i = 0; i < ChanIdx_Max; i++)
                 Channel_SetEnergy((ChanIdx_t)i, 0);
+
             return;
         }
         else
@@ -114,7 +115,7 @@ void Channel_SetEnergy(ChanIdx_t chan, uint8_t energy)
 {
     energy = CL_MIN(energy, CL_ARRAY_LENGTH(energyTable));
 
-    if (!IsAnyChanWork())
+    if (!IsAnyChanWork() && energy > 0)
         SetFreq(ChanFreq_Low);
 
     context.energy[(int)chan] = energy;
